@@ -1,0 +1,173 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage{times}
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{amsfonts,eucal,amsbsy,amsopn,amsmath}
+\usepackage{bm}
+\usepackage{url}
+\usepackage[numbers]{natbib}
+\usepackage{latexsym}
+\usepackage{wasysym} 
+\usepackage{rotating}
+\usepackage{fancyhdr}
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+\usepackage{sectsty}
+\usepackage[dvipsnames,usenames]{color}
+\usepackage{multicol}
+\definecolor{orange}{rgb}{1,0.5,0}
+\definecolor{DarkBlue}{rgb}{0,0,0.5}
+\definecolor{BrightBlue}{rgb}{0,0,0.9}
+\definecolor{DarkGreen}{rgb}{0,0.5,0}
+\usepackage{multirow}
+\usepackage{sidecap}
+\usepackage{caption}
+\usepackage{titling}
+\usepackage[colorlinks=true,citecolor=DarkGreen,urlcolor=BrightBlue,linkcolor=black]{hyperref}
+
+\renewcommand{\captionfont}{\normalsize}
+\allsectionsfont{\normalsize}
+
+\usepackage{enumitem}
+\setitemize{noitemsep,topsep=6pt,parsep=0pt,partopsep=0pt,leftmargin=1em}
+\setenumerate{noitemsep,topsep=6pt,parsep=0pt,partopsep=0pt,leftmargin=1em}
+
+
+\pagestyle{fancy}
+\lhead{}
+\chead{}
+\rhead{}
+\lfoot{}
+\cfoot{\thepage~of \pageref{lastpage}}
+\rfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\newcommand{\jmf}[1]{}
+
+
+\newcommand{\update}[1]{\textcolor{red}{\bf\small #1}}
+\newcommand{\remove}[1]{\textcolor{red}{\bf\small \sout{#1}}}
+\setlength{\droptitle}{-1cm}
+
+\title{Assignment 3 Report\\ CSE 143:  Intro to Natural Language Processing}
+\author{University of California Santa Cruz \\ 
+Tommaso Framba, tframba@ucsc.edu, ID: 1815342\\
+Chris Toukmaji, ctoukmaj@ucsc.edu, ID: 1720414
+\vspace{-2ex}}
+% TODO: choose date
+\date{Wednesday June 1, 2022}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\textbf{
+This assignment was done in Python 3 without use of any NLP libraries (such as NLTK).
+}
+\end{center}
+
+\begin{abstract}
+In this third assignment we implemented two text classification neural networks utilizing SimpleRNN and LSTM layers respectively. We also derived the Viterbi algorithm and implemented the Viterbi algorithm by creating a decode method that returns the max tag sequence for a given sentence, tags, and scores.  
+
+
+\end{abstract}
+
+
+\section{Programming: Text Classification with Neural Networks}
+
+\subsection{Programming: Text Classification with RNNs}
+
+\paragraph{Model Description}
+In this first part of the first problem we built a text classifier for the task of sentiment analysis in order to determine if a sentence from the IMDb reviews data set has positive or negative sentiment. This model utilizes Keras in order to create the model and apply layers to it. This model is made up of a SimpleRNN layer with 64 hidden dimension size, tanh nonlinearlity, and a dropout of 0.5. This model also utilizes a Dense sigmoid layer in order to classify the sentiment of the text. The model compilation is done with binary cross entropy loss, an adam optimizer that uses $10^{-3}$ learning rate, and an accuracy metric.
+
+
+\paragraph{Performance} This model can be fully trained in around 10 minutes with each epoch taking 32 seconds. 
+
+\paragraph{Experimental Procedure} In order to implement this neural network with a SimpleRNN layer we began by replacing the two existing GNN layers and replaced them with the SimpleRNN layer. We then encoded the test set and trained the model to get a baseline accuracy score before tuning the model. Then we tuned the model with nonlinearity of tanh, word embedding dimension size of 16, hidden dimension size of 64, dropout rate of 0.5, optimization method of adam, learning rate of $10^{-3}$, training batch size of 32, and number of training epochs of 20. After running the model with these hyperparameters and evaluating on the test set we was satisfied with the result and recorded the deliverables. 
+
+\paragraph{Deliverables} 
+\begin{enumerate}
+	\item Training accuracy: 0.9517, Testing accuracy: 0.7146
+	\item Located in zip as: \begin{verbatim}asg3_1_SimpleRNN.py
+	\end{verbatim}
+\end{enumerate}
+
+\subsection{Programming: Text Classification with LSTMs}
+
+\paragraph{Model Description}
+In this second part of the first problem we built a text classifier for the task of sentiment analysis in order to determine if a sentence from the IMDb reviews data set has positive or negative sentiment. This model utilizes Keras in order to create the model and apply layers to it. This model is made up of a LSTM layer with 64 hidden dimension size, tanh nonlinearlity, and a dropout of 0.5. This model also utilizes a Dense sigmoid layer in order to classify the sentiment of the text. The model compilation is done with binary cross entropy loss, an adam optimizer that uses $10^{-3}$ learning rate, and an accuracy metric.
+
+
+\paragraph{Performance} This model can be fully trained in around 5 minutes with each epoch taking 15 seconds. 
+
+\paragraph{Experimental Procedure} In order to implement this neural network with a LSTM layer we began by replacing the two existing GNN layers and replaced them with the LSTM layer. We then encoded the test set and trained the model to get a baseline accuracy score before tuning the model. Then we tuned the model with nonlinearity of tanh, word embedding dimension size of 16, hidden dimension size of 64, dropout rate of 0.5, optimization method of adam, learning rate of $10^{-3}$, training batch size of 32, and number of training epochs of 20. After running the model with these hyperparameters and evaluating on the test set we was satisfied with the result and recorded the deliverables. 
+
+\paragraph{Deliverables} 
+\begin{enumerate}
+	\item Training accuracy: 0.9463, Testing accuracy: 0.7307
+	\item For our models the LSTM models does in fact have better accuracy than the simple RNN model on longer sequences. In order to test this hypothesis we changed the preprocess method to include one thousand characters from the reviews instead of only three hundred. As a result the simpleRNN took an hour and 25 minutes to train with 4.25 minutes per epoch and produced a training accuracy of 0.8924 and a test accuracy of 0.7011. The LSTM model in comparison trained in 16 minutes total with 45 seconds per epoch and produced a training accuracy of 0.9463 and a test accuracy of 0.7307. This showcases that the long short-term memory model has better accuracy on longer sequences and only resulted in a 300\% increase in training time with similar training and test accuracy while the simple RNN model resulted in a 944\% increase in training time and a 7\% decrease in training accuracy. 
+	\item Located in zip as: \begin{verbatim}asg3_1_LSTM.py
+	\end{verbatim}
+\end{enumerate}
+
+\section{Theory: Deriving the Viterbi Algorithm}
+
+\paragraph{Model Description} 
+
+\paragraph{Performance} 
+
+\paragraph{Experimental Procedure}   
+
+\paragraph{Deliverables}
+\begin{enumerate}
+    \item 
+    \item
+\end{enumerate}
+
+\section{Programming: Implementing the Viterbi algorithm}
+
+\subsection{Coding the Viterbi Algorithm}
+
+\paragraph{Model Description} In this third problem we implemented the viterbi algorithm by completing the decode method in the assigned starter code. The decode algorithm takes in the input length, set of tags minus start and stop, and the scoring function that returns a score given the previous tag, current tag, and index of the tag. In order to implement this algorithm we created a matrix for the viterbi variables that score the best score at the location of the tag, and a backmarker matrix to store the path leading to the best score at the location of the tag. Our implementation first computes the viterbi variables, and backmarkers that lead to the first set of tags from the start tag. Then the algorithm runs through the rest of the length of input and calculates the max of all the possible options to reach a tag and utilizes dynamic programming to provide the correct viterbi variables and backmarkers. Finally the path is computed by iterating through the tags and computing the best way to reach the stop tag. Finally the decode method returns the correct path. 
+
+\paragraph{Performance} The model can be fully trained in around 23 minutes. 
+
+\paragraph{Experimental Procedure} We first began by uncommenting the test decoder method and implenting the algorithm step by step in order to provide the correct result. Once the max score of 14 was obtained we ran the algorithm on the main train function and recorded the results. 
+
+\paragraph{Deliverables}
+\begin{enumerate}
+    \item Report the precision, recall, and F1:
+    \begin{center}
+    processed 51578 tokens with 5917 phrases; found: 4891 phrases; correct: 3769.\\
+accuracy:  69.56\%; (non-O)\\
+accuracy:  94.23\%; precision:  77.06\%; recall:  63.70\%; FB1:  69.74
+              LOC: precision:  96.76\%; recall:  65.19\%; FB1:  77.90  1233
+             MISC: precision:  88.18\%; recall:  72.65\%; FB1:  79.66  753
+              ORG: precision:  62.77\%; recall:  69.65\%; FB1:  66.03  1488
+              PER: precision:  69.02\%; recall:  53.38\%; FB1:  60.20  1417    
+    \end{center}
+    \item Test and Dev
+    \begin{center}
+        accuracy:  69.56\%; (non-O)\\
+accuracy:  94.23\%; precision:  77.06\%; recall:  63.70\%; FB1:  69.74\\
+              LOC: precision:  96.76\%; recall:  65.19\%; FB1:  77.90  1233\\
+             MISC: precision:  88.18\%; recall:  72.65\%; FB1:  79.66  753\\
+              ORG: precision:  62.77\%; recall:  69.65\%; FB1:  66.03  1488\\
+              PER: precision:  69.02\%; recall:  53.38\%; FB1:  60.20  1417\\
+processed 46666 tokens with 5616 phrases; found: 4181 phrases; correct: 2858.\\
+accuracy:  57.83\%; (non-O)\\
+accuracy:  91.36\%; precision:  68.36\%; recall:  50.89\%; FB1:  58.34\\
+              LOC: precision:  92.28\%; recall:  63.15\%; FB1:  74.98  1140\\
+             MISC: precision:  73.57\%; recall:  62.34\%; FB1:  67.49  594\\
+              ORG: precision:  62.33\%; recall:  57.56\%; FB1:  59.85  1521\\
+              PER: precision:  45.46\%; recall:  26.28\%; FB1:  33.31  926\\
+    \end{center}
+    \item Located in zip as: \begin{verbatim}asg3_Viterbi.py\end{verbatim}
+\end{enumerate}
+
+\label{lastpage}
+\end{document}
+
+
+
