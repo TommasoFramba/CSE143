@@ -1,4 +1,2 @@
-# CSE 143
+# CSE 143 UCSC
 Capstone Natural Language Processing
-
-Grade: A
